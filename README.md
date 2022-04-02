@@ -28,6 +28,8 @@ MySql: `npm i mysql2`
 
 Inquirer: `npm i inquirer`
 
+Dotenv: `npm i dotenv`
+
 ```Initiate the application through the command line with the command node server.js. You will be taken through a series of prompts that will allow you to view, add, and update various information in the database. When given a list of choices, these choices are pulled from the database to accurately reflect any changes you may have made.``` 
 
 ## Tech
