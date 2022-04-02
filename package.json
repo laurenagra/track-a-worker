@@ -1,0 +1,25 @@
+{
+  "name": "track-a-worker",
+  "version": "1.0.0",
+  "description": "- [General](#general)\r - [User Story](#general)\r - [Installation](#installation)\r - [Tech](#tech)\r - [Screenshots](#screenshots)\r - [Acceptance Criteria](#acceptance-criteria)\r - [Authors](#authors)",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laurenagra/track-a-worker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/laurenagra/track-a-worker/issues"
+  },
+  "homepage": "https://github.com/laurenagra/track-a-worker#readme",
+  "dependencies": {
+    "inquirer": "^8.2.2",
+    "mysql2": "^2.3.3"
+  }
+}

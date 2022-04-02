@@ -1,5 +1,5 @@
 const inquirer = require("inquirer");
-const db = require("./config/connect");
+const db = require("./config/connection");
 const SqlQueries = require("./db/sqlqueries");
 const sql = new SqlQueries();
 
