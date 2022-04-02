@@ -1,13 +1,15 @@
 const inquirer = require("inquirer");
 const db = require("./config/connection");
 const SqlQueries = require("./db/sqlqueries");
-const sql = new SqlQueries();
+// const sql = new SqlQueries();
+console.log(SqlQueries);
 
 const initDb = () => {
   db.connect((err) => {
     if (err) throw err;
     console.log("Connected to database!");
     console.log("Welcome to the Employee Management App");
+    promptUser();
   });
 };
 
@@ -17,8 +19,8 @@ const promptUser = () => {
   inquirer
     .prompt([
       {
-        type: "checkbox",
-        name: "choices",
+        type: "list",
+        name: "choice",
         message: "What would you like to do?",
         choices: [
           "View all employees",
@@ -28,16 +30,15 @@ const promptUser = () => {
           "Add role",
           "View all departments",
           "Add department",
-          "Finished",
         ],
       },
     ])
     .then((response) => {
-      const choice = response.choices[0];
+      const choice = response;
+      console.log(choice);
+      //   console.log(response.choices);
 
-      choice.indexOf("View") != -1
-        ? viewTable(choice)
-        : choice === "Add employee"
+      choice === "Add employee"
         ? addEmployee()
         : choice === "Update employee role"
         ? updateRole()
@@ -57,7 +58,7 @@ viewTable = (choice) => {
   } else if (choice === "view all roles") {
     viewQuery = sql.viewRoles();
   } else {
-    viewQuery = sql.viewDepartments();
+    viewQuery = sql.viewDepartment();
   }
   if (viewQuery === " ") throw new error("Did not provide valid input.");
 
@@ -70,84 +71,82 @@ viewTable = (choice) => {
 };
 
 function addEmployee() {
-  let obj = {};
-  let roleNames = [];
-  db.query(sql.roleNames(), (err, results) => {
-    if (err) throw err;
-    results.forEach((role) => {
-      roleNames.push({
-        name: role.title,
-        value: role.id,
+  //   let obj = {};
+  //   let roleNames = [];
+  //   db.query(SqlQueries.roleNames(), (err, results) => {
+  //     results.forEach((role) => {
+  //       roleNames.push({
+  //         name: role.title,
+  //         value: role.id,
+  //       });
+  //     });
+  //     console.log(roleNames);
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first",
+        message: "What is the employee's first name?",
+      },
+      {
+        type: "input",
+        name: "last",
+        message: "What is their last name?",
+      },
+      {
+        type: "Checkbox",
+        name: "role",
+        message: "What is their role?",
+        choices: roleNames,
+      },
+    ])
+    .then((data) => {
+      obj.firstName = data.first;
+      obj.lastName = data.last;
+      obj.role = data.role;
+      let viewManagers = [];
+      db.query(SqlQueries.getManager(), (err, results) => {
+        if (err) throw err;
+        results.forEach((manager) => {
+          viewManagers.push({
+            name: manager.first_name + " " + manager.last_name,
+            value: manager.id,
+          });
+        });
+        viewManagers.push({ name: "None", value: null });
+
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "manager",
+              message: "who is the manager?",
+              choices: viewManagers,
+            },
+          ])
+          .then((data) => {
+            obj.manager = data.manager;
+
+            db.query(
+              SqlQueries.addEmployee(
+                obj.firstName,
+                obj.lastName,
+                obj.role,
+                obj.manager
+              ),
+              (err, results) => {
+                if (err) throw err;
+                console.log("Added new employee to database");
+              }
+            );
+          });
       });
     });
-    console.log(roleNames);
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "first",
-          message: "What is the employee's first name?",
-        },
-        {
-          type: "input",
-          name: "last",
-          message: "What is their last name?",
-        },
-        {
-          type: "Checkbox",
-          name: "role",
-          message: "What is their role?",
-          choices: roleNames,
-        },
-      ])
-      .then((data) => {
-        obj.firstName = data.first;
-        obj.lastName = data.last;
-        obj.role = data.role;
-        let viewManagers = [];
-        db.query(sql.getManager(), (err, results) => {
-          if (err) throw err;
-          results.forEach((manager) => {
-            viewManagers.push({
-              name: manager.first_name + " " + manager.last_name,
-              value: manager.id,
-            });
-          });
-          viewManagers.push({ name: "None", value: null });
-
-          inquirer
-            .prompt([
-              {
-                type: "list",
-                name: "manager",
-                message: "who is the manager?",
-                choices: viewManagers,
-              },
-            ])
-            .then((data) => {
-              obj.manager = data.manager;
-
-              db.query(
-                sql.addEmployee(
-                  obj.firstName,
-                  obj.lastName,
-                  obj.role,
-                  obj.manager
-                ),
-                (err, results) => {
-                  if (err) throw err;
-                  console.log("Added new employee to database");
-                }
-              );
-            });
-        });
-      });
-  });
 }
 
 addRole = () => {
   let roleObj = {};
-  db.query(sql.viewDepartments(), (err, results) => {
+  db.query(sql.viewDepartment(), (err, results) => {
     if (err) throw err;
     let viewDepartment = [];
     results.forEach((dept) => {
@@ -227,7 +226,7 @@ updateRole = () => {
   let updatedData = {};
   let employees = [];
   let roleNames = [];
-  db.query(sql.viewEmployeeTable(), (err, results) => {
+  db.query(sql.viewEmployees(), (err, results) => {
     if (err) throw err;
     results.forEach((employee) => {
       employees.push({
@@ -283,4 +282,4 @@ updateRole = () => {
 terminateApp = () => {
   console.log("Thank you for visiting");
 };
-promptUser();
+// promptUser();
