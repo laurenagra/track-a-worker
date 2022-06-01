@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 const db = require("./config/connection");
 const { viewEmployees } = require("./db/sqlqueries");
 const SqlQueries = require("./db/sqlqueries");
-console.log(SqlQueries);
+
 
 const initDb = () => {
   db.connect((err) => {
@@ -25,7 +25,7 @@ const promptUser = () => {
         choices: [
           "View all employees",
           "Add employee",
-          "Update employee roll",
+          "Update employee role",
           "View all roles",
           "Add role",
           "View all departments",
